@@ -13,6 +13,7 @@
 		98EB315D1785B17600BB5606 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		98EB31601785B21D00BB5606 /* main.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = main.py; sourceTree = "<group>"; };
 		98EB31611785B27200BB5606 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		98EB31621785E24900BB5606 /* cian.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = cian.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -39,6 +40,7 @@
 		98EB315E1785B18800BB5606 /* SiteGrabs */ = {
 			isa = PBXGroup;
 			children = (
+				98EB31621785E24900BB5606 /* cian.py */,
 				98EB31611785B27200BB5606 /* __init__.py */,
 			);
 			path = SiteGrabs;
