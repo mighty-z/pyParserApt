@@ -6,6 +6,7 @@
 
 __version__ = "0.6 beta"
 
+
 # Copyright (c) 2009 Paul Hammond
 #
 # Permission is hereby granted, free of charge, to any person obtaining a copy

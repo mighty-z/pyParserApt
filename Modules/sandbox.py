@@ -20,6 +20,7 @@ class SitePars(Spider):
 	#this allows to pass variables into the class
 	glb = ''
 	
+	
 	#create output files
 	def prepare(self):
 		self.result_file = open(self.glb.envOutput + r'rezon_realty.txt', 'w')

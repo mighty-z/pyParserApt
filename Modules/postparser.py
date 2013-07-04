@@ -401,7 +401,7 @@ def sort_screenshots_tmp(glb):
 			destanation += file
 			shutil.move(source, destanation)
 			
-
+  
 #	files = os.listdir(glb.envImgOutput + 'mgan/')
 #	for file in files:
 #		if file.split('.')[-1] in ['png', 'jpg', 'jpeg', 'gif']:
