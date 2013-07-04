@@ -41,13 +41,15 @@ def DetEnv(fTest = True):
 	glb = ObjDummy()
 	
 	if curr_uname == 'mighty-mbp':
-		glb.envDir = '/Users/mighty_z/Documents/pyParser/pyParser/'
-		glb.envOutput = '/Users/mighty_z/Documents/pyParser/pyOutput/'
+		glb.usrFlag = 1
+		glb.envDir = '/Users/mighty_z/Documents/pyParserApt'
+		glb.envOutput = '/Users/mighty_z/Documents/pyOutput/'
 		if fTest :
-			glb.envImgOutput = '/Users/mighty_z/Documents/pyParser/pyOutput/imgs/'
+			glb.envImgOutput = '/Users/mighty_z/Documents/pyOutput/imgs/'
 		else :
 			glb.envImgOutput = '/Volumes/FAT32-1TB/pyOutput/imgs/'
 	elif curr_uname == 'bt':
+		glb.usrFlag = -1
 		glb.envDir = '/root/Desktop/pyParser/'
 		glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
 		glb.envImgOutput = '/root/Desktop/pyParser/pyOutput/imgs/'
