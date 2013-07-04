@@ -9,6 +9,7 @@ import datetime
 import random
 import time
 
+from time import localtime, strftime
 from grab.spider import Spider, Task
 
 imgDict = {}
@@ -109,7 +110,8 @@ class SitePars(Spider):
 			# write here your command! change sript_name to your
 			currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
 		elif self.glb.usrFlag == -1:
-			currCmd = 'python ' + self.glb.envDir + 'webkit2png' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
+			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
+			#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 		
 		os.system(currCmd)
 

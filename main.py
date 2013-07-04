@@ -14,9 +14,11 @@ from grab.spider import Spider, Task
 
 from time import localtime, strftime
 
-from Modules.webkit2png import LockNLoad
-from Modules.postparser import post_parser, sort_screenshots
-
+try: 
+	from Modules.webkit2png import LockNLoad
+	from Modules.postparser import post_parser, sort_screenshots
+except:
+	print "fuck up"
 from SiteGrabs import *
 
 
@@ -50,7 +52,7 @@ def DetEnv(fTest = True):
 			glb.envImgOutput = '/Volumes/FAT32-1TB/pyOutput/imgs/'
 	elif curr_uname == 'bt':
 		glb.usrFlag = -1
-		glb.envDir = '/root/Desktop/pyParser/'
+		glb.envDir = '/root/pyParserAptGit/'
 		glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
 		glb.envImgOutput = '/root/Desktop/pyParser/pyOutput/imgs/'
 	
@@ -68,8 +70,8 @@ print '----------------------------'
 glb = DetEnv()
 
 # add site parsers here
-# siteName.GoGtab(glb, [iNumberOfThreads], [bDebug], [bGetNew])
-
+# siteName.GoGrab(glb, [iNumberOfThreads], [bDebug], [bGetNew])
+cian.GoGrab(glb, 6, True)
 
 #post_parser(
 #			glb
