@@ -7,25 +7,18 @@ import logging
 import re
 import datetime
 import random
+import time
 
 from grab.spider import Spider, Task
 
 imgDict = {}
-curr_uname = os.uname()
 
-# check for current uname. usrFlag is used in code below for determining the folders and script for screenshots
-if curr_uname[1] == 'mighty-mbp.local':
-	usrFlag = 1
-	resFolder, resFolderOut = '/Users/mighty_z/Documents/pyParser/', '/Users/mighty_z/Documents/pyParser/pyOutput/'
-elif curr_uname[1] == 'bt':
-	usrFlag = -1
-	resFolder, resFolderOut = '/root/Desktop/pyParser/', '/root/Desktop/pyParser/pyOutput/'
 
 class SitePars(Spider):
 	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room7=1&p=1']
 
 	def prepare(self):
-		self.result_file = open(resFolderOut + 'cian.txt', 'w')
+		self.result_file = open(self.glb.envOutput + 'cian.txt', 'w')
 		self.result_file.write('Тип недвижимости;Адрес;Станция метро;Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;\
 	Площадь кухни;Вид передаваемого права;Цена продажи;Дата предложения;Описание;Агентство;Телефон;Ссылка\n')
 
@@ -111,12 +104,12 @@ class SitePars(Spider):
 		self.result_file.write(stringO + "\n")
 
 		# save an url screenshot
-		scrFolder = resFolderOut + 'screenshots/'
-		if usrFlag == 1:
+		scrFolder = self.glb.envOutput + 'screenshots/'
+		if self.glb.usrFlag == 1:
 			# write here your command! change sript_name to your
-			currCmd = resFolder + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
-		elif usrFlag == -1:
-			currCmd = 'python ' + resFolder + 'webkit2png' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
+			currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
+		elif self.glb.usrFlag == -1:
+			currCmd = 'python ' + self.glb.envDir + 'webkit2png' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 		
 		os.system(currCmd)
 
@@ -133,10 +126,19 @@ class SitePars(Spider):
 		# except IndexError:
 		# 	imgRes = str(task.url.split('/')[:-1]) + '_' + str(random.randint(1,99))
 		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
-		path = resFolderOut + '/imgs/%s.jpg' % imgRes
+		path = self.glb.envOutput + '/imgs/%s.jpg' % imgRes
 		grab.response.save(path)
 
-if __name__ == '__main__':
-	logging.basicConfig(level=logging.DEBUG)
-	bot = SitePars(thread_number=6)
+def GoGrab(glb, threads = 1, debug = False, getNew = True):
+	print ''
+	print 'Go grab cian.ru '
+	print ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())
+	print '----------------------------'
+	print '----------------------------'
+	if debug:
+		logging.basicConfig(level=logging.DEBUG)
+	bot = SitePars(thread_number = threads)
+	bot.glb = glb
 	bot.run()
+
+
