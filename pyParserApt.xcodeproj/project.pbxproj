@@ -6,12 +6,43 @@
 	objectVersion = 46;
 	objects = {
 
+/* Begin PBXFileReference section */
+		98EB315A1785B17600BB5606 /* sandbox.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = sandbox.py; sourceTree = "<group>"; };
+		98EB315B1785B17600BB5606 /* postparser.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = postparser.py; sourceTree = "<group>"; };
+		98EB315C1785B17600BB5606 /* webkit2png.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = webkit2png.py; sourceTree = "<group>"; };
+		98EB315D1785B17600BB5606 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+		98EB31601785B21D00BB5606 /* main.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = main.py; sourceTree = "<group>"; };
+		98EB31611785B27200BB5606 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
 /* Begin PBXGroup section */
 		98EB314A1785AFD500BB5606 = {
 			isa = PBXGroup;
 			children = (
+				98EB31601785B21D00BB5606 /* main.py */,
+				98EB315E1785B18800BB5606 /* SiteGrabs */,
+				98EB31551785B06E00BB5606 /* Modules */,
 			);
 			sourceTree = "<group>";
+		};
+		98EB31551785B06E00BB5606 /* Modules */ = {
+			isa = PBXGroup;
+			children = (
+				98EB315A1785B17600BB5606 /* sandbox.py */,
+				98EB315B1785B17600BB5606 /* postparser.py */,
+				98EB315C1785B17600BB5606 /* webkit2png.py */,
+				98EB315D1785B17600BB5606 /* __init__.py */,
+			);
+			path = Modules;
+			sourceTree = SOURCE_ROOT;
+		};
+		98EB315E1785B18800BB5606 /* SiteGrabs */ = {
+			isa = PBXGroup;
+			children = (
+				98EB31611785B27200BB5606 /* __init__.py */,
+			);
+			path = SiteGrabs;
+			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
