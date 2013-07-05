@@ -12,39 +12,59 @@ import time
 from time import localtime, strftime
 from grab.spider import Spider, Task
 
-imgDict = {}
-
+imgDict, typeDict = {}, {}
 
 class SitePars(Spider):
 	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room7=1&p=1']
 
 	def prepare(self):
 		self.result_file = open(self.glb.envOutput + 'cian.txt', 'w')
-		self.result_file.write('Тип недвижимости;Адрес;Станция метро;Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;\
+		self.result_file.write('ID объекта;Тип недвижимости;Адрес;Станция метро;Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;\
 	Площадь кухни;Вид передаваемого права;Цена продажи;Дата предложения;Описание;Агентство;Телефон;Ссылка\n')
 
 	#определяем номер последней страницы навигации. НАДО АВТОМАТИЗИРОВАТЬ
 	def task_initial(self, grab, task):
 		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
 		num_of_pages = 2
-		for n in range(10, num_of_pages + 15):
+		for n in range(1, num_of_pages + 37):
 			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room7=1&p=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
 	def task_nav(self, grab, task):
+		global typeDict
+
+		obj, url, request, xpath_string = '', '', '', ''
 		for elem in grab.tree.xpath('//a[@target="_blank"]/@href'):
 			if elem[0:14]=='/showphoto.php':
+
+				#вытягиваем из таблицы тип недвижимости - вторичка или новостройка
+				url = grab.make_url_absolute(elem)
+				obj = url.split('=')[1]
+				request = '//td[@id="dl2m_' + obj + '_dopsved"]'
+				xpath_string = grab.xpath(request)
+				
+				if len(xpath_string.text_content().encode('utf-8').split('Новостройка')) > 1:
+					typeDict[obj] = 'Новостройка;'
+				elif len(xpath_string.text_content().encode('utf-8').split('Вторичка')) > 1:
+					typeDict[obj] = 'Вторичка;'
+				else:
+					typeDict[obj] = 'not defined;'
+				
 				yield Task('cianobject', url=grab.make_url_absolute(elem))
 
 	def task_cianobject(self, grab, task):
-		global imgDict
+		global imgDict, typeDict
 
 		nonNum = re.compile(u'[^0-9]', re.U)
 		mainDescr, listDescr = '', []
+		dateYest = datetime.timedelta(days=1)
+
+		objID = task.url.split('=')[1]
 
 		rType, rAddress, rMetro, rFloor, rRoomCount, rSquare, rLiveSquare, rDinnerSquare, rRights, rCost, rDate, rDescr, rAgency, rPhone, rawDescr = \
 			';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ''
 
+		rRights = typeDict[objID]
 		#тип недвижимости
 		rType = 'Квартира;'
 
@@ -81,7 +101,12 @@ class SitePars(Spider):
 
 		#дата
 		for elem in grab.xpath_list('//span[@class="object_descr_dt_added"]'):
-			rDate = elem.text_content().encode('utf-8') + ';'
+			if elem.text_content().encode('utf-8')[0:10] == 'вчера':
+				rDate = str(datetime.date.today() - dateYest) + ';'
+			elif elem.text_content().encode('utf-8')[0:14] == 'сегодня':
+				rDate = str(datetime.date.today()) + ';'
+			else:
+				rDate = elem.text_content().encode('utf-8') + ';'
 
 		#агентство
 		for elem in grab.xpath_list('//span[@class="object_descr_rieltor_name"]'):
@@ -89,14 +114,14 @@ class SitePars(Spider):
 
 		#описание
 		for elem in grab.xpath_list('//div[@class="object_descr_text"]'):
-			rDescr = elem.text_content().encode('utf-8').replace('\r\n', '').replace('\t', '').replace('\n', '').replace('\r', '').strip() + ';'
+			rDescr = elem.text_content().encode('utf-8').replace('\r\n', '').replace('\t', '').replace('\n', '').replace('\r', '').replace(';', '|').strip() + ';'
 
 		#телефоны
 		for elem in grab.xpath_list('//div[@class="object_descr_phones"]/strong'):
 			rPhone = elem.text_content().encode('utf-8') + ';'
 
 		#составляем строку для заливки 
-		stringO = rType + rAddress + rMetro + rFloor \
+		stringO = objID + ';' + rType + rAddress + rMetro + rFloor \
 			+ rRoomCount + rSquare + rLiveSquare + rDinnerSquare \
 			+ rRights + rCost + rDate + rDescr + rAgency + rPhone + task.url + ';'
 
@@ -104,20 +129,26 @@ class SitePars(Spider):
 		stringO = stringO.strip('\r\n\t').replace('\r\n', ' ')
 		self.result_file.write(stringO + "\n")
 
+		#меняем каталог для работы с фс
+		os.chdir(self.glb.envOutput)
+		os.mkdir(objID)
 		# save an url screenshot
-		scrFolder = self.glb.envOutput + 'screenshots/'
+		##scrFolder = self.glb.envOutput + 'screenshots/'
+		
+		scrFolder = self.glb.envOutput + objID
+
 		if self.glb.usrFlag == 1:
 			# write here your command! change sript_name to your
 			currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
 		elif self.glb.usrFlag == -1:
-			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
+			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + '/' + objID + '.png'
 			#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 		
 		os.system(currCmd)
 
 		# saving all images. PLEASE, CREATE imgs folder in pyOutput 
 		for nxtElem in grab.tree.xpath('//div[@class="object_descr_images_w"]/a/@href'):
-			imgDict[grab.make_url_absolute(nxtElem)]=task.url.split('=')[1]
+			imgDict[grab.make_url_absolute(nxtElem)]=objID
 			yield Task('imageSave', url=grab.make_url_absolute(nxtElem))
 
 	#images saving...
@@ -128,7 +159,7 @@ class SitePars(Spider):
 		# except IndexError:
 		# 	imgRes = str(task.url.split('/')[:-1]) + '_' + str(random.randint(1,99))
 		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
-		path = self.glb.envOutput + '/imgs/%s.jpg' % imgRes
+		path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
 		grab.response.save(path)
 
 def GoGrab(glb, threads = 1, debug = False, getNew = True):
@@ -142,5 +173,3 @@ def GoGrab(glb, threads = 1, debug = False, getNew = True):
 	bot = SitePars(thread_number = threads)
 	bot.glb = glb
 	bot.run()
-
-
