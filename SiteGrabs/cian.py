@@ -129,38 +129,38 @@ class SitePars(Spider):
 		stringO = stringO.strip('\r\n\t').replace('\r\n', ' ')
 		self.result_file.write(stringO + "\n")
 
-	# 	#меняем каталог для работы с фс
-	# 	os.chdir(self.glb.envOutput)
-	# 	os.mkdir(objID)
-	# 	# save an url screenshot
-	# 	##scrFolder = self.glb.envOutput + 'screenshots/'
+		#меняем каталог для работы с фс
+		os.chdir(self.glb.envOutput)
+		os.mkdir(objID)
+		# save an url screenshot
+		##scrFolder = self.glb.envOutput + 'screenshots/'
 		
-	# 	scrFolder = self.glb.envOutput + objID
+		scrFolder = self.glb.envOutput + objID
 
-	# 	if self.glb.usrFlag == 1:
-	# 		# write here your command! change sript_name to your
-	# 		currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
-	# 	elif self.glb.usrFlag == -1:
-	# 		currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + '/' + objID + '.png'
-	# 		#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
+		if self.glb.usrFlag == 1:
+			# write here your command! change sript_name to your
+			currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
+		elif self.glb.usrFlag == -1:
+			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + '/' + objID + '.png'
+			#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 		
-	# 	os.system(currCmd)
+		os.system(currCmd)
 
-	# 	# saving all images. PLEASE, CREATE imgs folder in pyOutput 
-	# 	for nxtElem in grab.tree.xpath('//div[@class="object_descr_images_w"]/a/@href'):
-	# 		imgDict[grab.make_url_absolute(nxtElem)]=objID
-	# 		yield Task('imageSave', url=grab.make_url_absolute(nxtElem))
+		# saving all images. PLEASE, CREATE imgs folder in pyOutput 
+		for nxtElem in grab.tree.xpath('//div[@class="object_descr_images_w"]/a/@href'):
+			imgDict[grab.make_url_absolute(nxtElem)]=objID
+			yield Task('imageSave', url=grab.make_url_absolute(nxtElem))
 
-	# #images saving...
-	# def task_imageSave(self, grab, task):
-	# 	global imgDict
-	# 	# try:
-	# 	# 	imgRes = task.url.split('/')[7] + '_' + str(random.randint(1,99))
-	# 	# except IndexError:
-	# 	# 	imgRes = str(task.url.split('/')[:-1]) + '_' + str(random.randint(1,99))
-	# 	imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
-	# 	path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
-	# 	grab.response.save(path)
+	#images saving...
+	def task_imageSave(self, grab, task):
+		global imgDict
+		# try:
+		# 	imgRes = task.url.split('/')[7] + '_' + str(random.randint(1,99))
+		# except IndexError:
+		# 	imgRes = str(task.url.split('/')[:-1]) + '_' + str(random.randint(1,99))
+		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
+		path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
+		grab.response.save(path)
 
 def GoGrab(glb, threads = 1, debug = False, getNew = True):
 	print ''
