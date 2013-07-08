@@ -12,10 +12,10 @@ import time
 from time import localtime, strftime
 from grab.spider import Spider, Task
 
-imgDict, typeDict = {}, {}
+imgDict, typeDict, roomsDict = {}, {}, {}
 
 class SitePars(Spider):
-	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room7=1&p=1']
+	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=1']
 
 	def prepare(self):
 		self.result_file = open(self.glb.envOutput + 'cian.txt', 'w')
@@ -27,7 +27,7 @@ class SitePars(Spider):
 		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
 		num_of_pages = 2
 		for n in range(1, num_of_pages + 37):
-			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room7=1&p=%s' % n)
+			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
 	def task_nav(self, grab, task):
@@ -49,11 +49,15 @@ class SitePars(Spider):
 					typeDict[obj] = 'Вторичка;'
 				else:
 					typeDict[obj] = 'not defined;'
+
+				request = '//td[@id="dl2m_' + obj + '_room"]'
+				xpath_string = grab.xpath(request)
+				roomsDict[obj] = xpath_string.text_content().encode('utf-8').split('\n')[0] + ';'
 				
 				yield Task('cianobject', url=grab.make_url_absolute(elem))
 
 	def task_cianobject(self, grab, task):
-		global imgDict, typeDict
+		global imgDict, typeDict, roomsDict
 
 		nonNum = re.compile(u'[^0-9]', re.U)
 		mainDescr, listDescr = '', []
@@ -64,7 +68,12 @@ class SitePars(Spider):
 		rType, rAddress, rMetro, rFloor, rRoomCount, rSquare, rLiveSquare, rDinnerSquare, rRights, rCost, rDate, rDescr, rAgency, rPhone, rawDescr = \
 			';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ';', ''
 
+		#вид передаваемого права
 		rRights = typeDict[objID]
+		
+		#количество комнат
+		rRoomCount = roomsDict[objID]
+
 		#тип недвижимости
 		rType = 'Квартира;'
 
@@ -154,10 +163,6 @@ class SitePars(Spider):
 	#images saving...
 	def task_imageSave(self, grab, task):
 		global imgDict
-		# try:
-		# 	imgRes = task.url.split('/')[7] + '_' + str(random.randint(1,99))
-		# except IndexError:
-		# 	imgRes = str(task.url.split('/')[:-1]) + '_' + str(random.randint(1,99))
 		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
 		path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
 		grab.response.save(path)
