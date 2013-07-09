@@ -18,6 +18,7 @@ from grab.spider import Spider, Task
 class SitePars(Spider):
 	initial_urls = [
 					'http://www.realto.ru/base/flat_sale/'
+					,'http://www.realto.ru/base/new_build/'
 					]
 	#this allows to pass variables into the class
 	glb = ''
@@ -38,10 +39,18 @@ class SitePars(Spider):
 
 	#get navigation pages
 	def task_initial(self, grab, task):
-		iNavPagesCount = grab.doc.select('//a[@class="pages"]')[-2].number()
-#		print num_of_pages
-		for n in range(1, iNavPagesCount)[0:1]:############################################################################
-			yield Task('NavPages', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
+		if task.url.split('/')[4] == 'flat_sale':
+			iNavPagesCount = grab.doc.select('//a[@class="pages"]')[-2].number()
+			#print iNavPagesCount
+			for n in range(1, iNavPagesCount)[0:1]:############################################################################
+				yield Task('NavPages', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
+		
+		if task.url.split('/')[4] == 'new_build':
+			urlLastNavPage = grab.doc.select('//div[@class="page_bar"]').select('.//a')[-1].attr('href')
+			iNavPagesCount = int(urlLastNavPage.split('=')[-1])
+			#print iNavPagesCount
+			for n in range(1, iNavPagesCount)[0:1]:############################################################################
+				yield Task('NavPages', url = 'http://www.realto.ru/base/new_build/?page=%s' % n)
 
 	#get card pages // table view
 	def task_NavPages(self, grab, task):
@@ -61,17 +70,21 @@ class SitePars(Spider):
 				';'
 		
 		sOutputLine = ';'
+		dCells = {}
 					
 		sOutType = 'Квартира;'
-		#ToDo: sOutRights = ';'
+		if task.url.split('/')[4] == 'flat_sale':
+			sOutRights = u'Вторичка;'
+		else:
+			sOutRights = u'Новостройка;'
 		
-		dCells = {}
+
 		
 		print task.url
 		listCellTitles = grab.doc.select('//td[@class="base_one_title"]')
 		listCellContent = grab.doc.select('//td[@class="base_one_text"]')
 		for i in range(0, len(listCellTitles)):
-#			print listCellTitles[i].text().encode('utf-8'), '|', listCellContent[i].text().encode('utf-8')
+			print listCellTitles[i].text().encode('utf-8'), '|', listCellContent[i].text().encode('utf-8')
 			dCells[listCellTitles[i].text()] = listCellContent[i].text()
 
 		if u'Адрес:' in dCells:
@@ -118,11 +131,11 @@ class SitePars(Spider):
 
 		if u'О рекламодателе' in dCells:
 			sOutAgency = dCells[u'О рекламодателе'] + ';'
-		print sOutAgency.encode('utf-8')
+#		print sOutAgency.encode('utf-8')
 
 		if u'Телефоны' in dCells:
 			sOutPhone = dCells[u'Телефоны'] + ';'
-		print sOutPhone.encode('utf-8')
+#		print sOutPhone.encode('utf-8')
 
 #
 #		#output object url to the collection
