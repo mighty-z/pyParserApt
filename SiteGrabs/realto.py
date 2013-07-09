@@ -36,15 +36,23 @@ class SitePars(Spider):
 							   Описание;Агентство;Телефон;Ссылка\n'\
 							   )
 
-	#get navigation pages // table view
+	#get navigation pages
 	def task_initial(self, grab, task):
-		num_of_pages = grab.doc.select('//a[@class="pages"]')[-2].number()
+		iNavPagesCount = grab.doc.select('//a[@class="pages"]')[-2].number()
 #		print num_of_pages
-		for n in range(1, num_of_pages):
-			yield Task('nav', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
+		for n in range(1, iNavPagesCount)[0:1]:
+			yield Task('NavPages', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
 
-#	#parse cards
-#	def task_cards(self, grab, task):
+	#get card pages // table view
+	def task_NavPages(self, grab, task):
+		for r in grab.doc.select('//tr[@class="row_base"]'):
+			td = r.select('.//td[@class="base_td"]')[7]
+			url =  td.select('.//a')[0].attr('href')
+			yield Task('CardPages', url = grab.make_url_absolute(url))
+
+	#parse cards
+	def task_CardPages(self, grab, task):
+		print task.url
 #		tRow = [u'',u'']
 #		tRowInd = 0
 #		CardType = ''
