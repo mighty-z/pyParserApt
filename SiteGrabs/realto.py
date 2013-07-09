@@ -21,8 +21,8 @@ class SitePars(Spider):
 					]
 	#this allows to pass variables into the class
 	glb = ''
-	arScreenShotQueue = []
-	dObjPhotoReference = {}
+#	arScreenShotQueue = []
+#	dObjPhotoReference = {}
 	
 	#create output files
 	def prepare(self):
@@ -40,47 +40,91 @@ class SitePars(Spider):
 	def task_initial(self, grab, task):
 		iNavPagesCount = grab.doc.select('//a[@class="pages"]')[-2].number()
 #		print num_of_pages
-		for n in range(1, iNavPagesCount)[0:1]:
+		for n in range(1, iNavPagesCount)[0:1]:############################################################################
 			yield Task('NavPages', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
 
 	#get card pages // table view
 	def task_NavPages(self, grab, task):
-		for r in grab.doc.select('//tr[@class="row_base"]'):
+		for r in grab.doc.select('//tr[@class="row_base"]')[0:1]:##########################################################
 			td = r.select('.//td[@class="base_td"]')[7]
 			url =  td.select('.//a')[0].attr('href')
 			yield Task('CardPages', url = grab.make_url_absolute(url))
 
 	#parse cards
 	def task_CardPages(self, grab, task):
+		#define elements of output string
+		sOutType = sOutRights = \
+			sOutAddress = sOutMetro = \
+			sOutFloor = sOutRoomCount = sOutFloorSpace = sOutLivingSpace = sOutKitchenSpace = \
+			sOutPrice = \
+			sOutDate = sOutDescription = sOutAgency = sOutPhone = \
+				';'
+		
+		sOutputLine = ';'
+					
+		sOutType = 'Квартира;'
+		#ToDo: sOutRights = ';'
+		
+		dCells = {}
+		
 		print task.url
-#		tRow = [u'',u'']
-#		tRowInd = 0
-#		CardType = ''
-#		
-#		#elements of the output string
-#		sOfferType = sObjType = sOfferDate = \
-#			sRegion = sTown = sDistrict = \
-#			sDomain = sRange = \
-#			sArea = sBldType = sBldStoreys = sStorey = \
-#			sPrice = sPricePerSqm = \
-#			sFunction = \
-#			sLandFunction = sLandConstructions = \
-#			sContactNumber = sContactEmail = sContactName = \
-#			sImgFolder = \
-#				';'
-#		
-#		sAddress = sBldNumber = ''
-#		rawDescr = ''
-#		OutputLine = ''
-#		
-#		CardType = grab.xpath('//title').text_content().strip(' \t\r\n').split(' ')[0]
-#		arExcludeCards = [
-#						  u'База',
-#						  u'Новостройки',
-#						  u'Вторичное',
-#						  u'Коттеджи,'
-#						  ]
-#		
+		listCellTitles = grab.doc.select('//td[@class="base_one_title"]')
+		listCellContent = grab.doc.select('//td[@class="base_one_text"]')
+		for i in range(0, len(listCellTitles)):
+#			print listCellTitles[i].text().encode('utf-8'), '|', listCellContent[i].text().encode('utf-8')
+			dCells[listCellTitles[i].text()] = listCellContent[i].text()
+
+		if u'Адрес:' in dCells:
+			sOutAddress = dCells[u'Адрес:'] + ';'
+			try:
+				sOutMetro = dCells[u'Адрес:'].split(', ')[4].replace(u'ближайшая станция метро ', '') + ';'
+			except:
+				pass
+#		print sOutAddress.encode('utf-8')
+#		print sOutMetro.encode('utf-8')
+
+		if u'Этаж / этажность' in dCells:
+			sOutFloor = dCells[u'Этаж / этажность'] + ';'
+#		print sOutFloor.encode('utf-8')
+
+		if u'Продается' in dCells:
+			sOutRoomCount = dCells[u'Продается'].split(' ')[0] + ';'
+#		print sOutRoomCount.encode('utf-8')
+
+		if u'Площади(общая/жилая/кухня)' in dCells:
+			listSpace = dCells[u'Площади(общая/жилая/кухня)'].split(' / ')
+			sOutFloorSpace = listSpace[0] + ';'
+			sOutLivingSpace = listSpace[1] + ';'
+			sOutKitchenSpace = listSpace[2] + ';'
+#		print sOutFloorSpace.encode('utf-8')
+#		print sOutLivingSpace.encode('utf-8')
+#		print sOutKitchenSpace.encode('utf-8')
+
+		if u'Стоимость' in dCells:
+			sOutPrice = dCells[u'Стоимость'].split(u' руб.')[0] + ';'
+#		print sOutPrice.encode('utf-8')
+
+		if u'Дата обновления' in dCells:
+			sOutDate = dCells[u'Дата обновления'] + ';'
+#		print sOutDate.encode('utf-8')
+
+		if u'Комментарии' in dCells:
+			sOutDescription = dCells[u'Комментарии'] + ';'
+#		print sOutDescription.encode('utf-8')
+
+		if u'Об объекте' in dCells:
+			sOutDescription = dCells[u'Об объекте'] + ' // ' + sOutDescription
+#		print sOutDescription.encode('utf-8')
+
+		if u'О рекламодателе' in dCells:
+			sOutAgency = dCells[u'О рекламодателе'] + ';'
+		print sOutAgency.encode('utf-8')
+
+		if u'Телефоны' in dCells:
+			sOutPhone = dCells[u'Телефоны'] + ';'
+		print sOutPhone.encode('utf-8')
+
+#
 #		#output object url to the collection
 #		if self.glb.getNew and CardType not in arExcludeCards:
 #			ul = task.url + "\n"
