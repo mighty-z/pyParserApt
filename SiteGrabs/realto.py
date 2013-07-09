@@ -7,10 +7,13 @@ import shutil
 import logging
 import time
 
-from grab.spider import Spider, Task
-from grab import Grab
-from Modules.webkit2png import LockNLoad
 from time import localtime, strftime
+
+from grab import Grab
+from grab.spider import Spider, Task
+#from grab.selector import Selector
+
+#from Modules.webkit2png import LockNLoad
 
 class SitePars(Spider):
 	initial_urls = [
@@ -25,7 +28,7 @@ class SitePars(Spider):
 	def prepare(self):
 		self.result_file = open(self.glb.envOutput + 'realto.txt', 'w')
 		self.result_file.write(\
-							   u'ID объекта;\
+							   'ID объекта;\
 							   Тип недвижимости;Адрес;Станция метро;\
 							   Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;Площадь кухни;\
 							   Вид передаваемого права;\
@@ -35,10 +38,10 @@ class SitePars(Spider):
 
 	#get navigation pages // table view
 	def task_initial(self, grab, task):
-		num_of_pages = int(grab.xpath_list('//a[@class="pages"]')[-2])
-		print num_of_pages
-#		for n in range(1, num_of_pages + 37):
-#			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room7=1&p=%s' % n)
+		num_of_pages = grab.doc.select('//a[@class="pages"]')[-2].number()
+#		print num_of_pages
+		for n in range(1, num_of_pages):
+			yield Task('nav', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
 
 #	#parse cards
 #	def task_cards(self, grab, task):
@@ -270,7 +273,7 @@ class SitePars(Spider):
 #				shutil.move(source, destanation)
 		
 		print '----------------------------'
-		print 'Finished with rezon-realty.ru '
+		print 'Finished with realto.ru '
 		print ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())
 		print '----------------------------'
 		print '----------------------------'
