@@ -394,7 +394,6 @@ def ShootOne(
 			  , width = 800.0
 			  , height = 600.0
 			  , datestamp = False
-			  , delay = 0.0
 			  , noimages = False
 			  ):
 	
@@ -402,15 +401,27 @@ def ShootOne(
 	if noimages:
 		noimagesStr = ' --noimages'
 	
+	print 'python ' \
+	+ location \
+	+ '/Modules/webkit2png.py -F' \
+	+ ' -W ' + str(width) \
+	+ ' -H ' + str(height) \
+	+ ' --dir ' + dir \
+	+ noimagesStr \
+	+ ' ' + url
+
+	if len(filename)!=0:
+		filename = ' --filename ' + filename
+	
 	os.system(
 			  'python ' \
 			  + location \
 			  + '/Modules/webkit2png.py -F' \
 			  + ' -W ' + str(width) \
 			  + ' -H ' + str(height) \
-			  + ' --delay ' + str(delay) \
 			  + ' --dir ' + dir \
 			  + noimagesStr \
+			  + filename \
 			  + ' ' + url
 			  )
 
