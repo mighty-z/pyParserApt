@@ -28,13 +28,12 @@ class SitePars(Spider):
 	#create output files
 	def prepare(self):
 		self.result_file = open(self.glb.envOutput + 'realto.txt', 'w')
-		self.result_file.write(\
-							   'ID объекта;\
-							   Тип недвижимости;Адрес;Станция метро;\
-							   Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;Площадь кухни;\
-							   Вид передаваемого права;\
-							   Цена продажи;Дата предложения;\
-							   Описание;Агентство;Телефон;Ссылка\n'\
+		self.result_file.write('ID объекта;' + \
+							   'Тип недвижимости;Адрес;Станция метро;' + \
+							   'Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;Площадь кухни;' + \
+							   'Вид передаваемого права;' + \
+							   'Цена продажи;Дата предложения;' + \
+							   'Описание;Агентство;Телефон;Ссылка\n' \
 							   )
 
 	#get navigation pages
@@ -54,7 +53,7 @@ class SitePars(Spider):
 
 	#get card pages // table view
 	def task_NavPages(self, grab, task):
-		for r in grab.doc.select('//tr[@class="row_base"]')[0:1]:##########################################################
+		for r in grab.doc.select('//tr[@class="row_base"]'):
 			td = r.select('.//td[@class="base_td"]')[7]
 			url =  td.select('.//a')[0].attr('href')
 			yield Task('CardPages', url = grab.make_url_absolute(url))
@@ -69,190 +68,89 @@ class SitePars(Spider):
 			sOutDate = sOutDescription = sOutAgency = sOutPhone = \
 				';'
 		
-		sOutputLine = ';'
+		#dictionary for tmp information cells
 		dCells = {}
 					
-		sOutType = 'Квартира;'
+		sOutType = u'Квартира;'
 		if task.url.split('/')[4] == 'flat_sale':
 			sOutRights = u'Вторичка;'
+			sObjId = 'flat_sale/id'
 		else:
 			sOutRights = u'Новостройка;'
+			sObjId = 'new_build/id'
 		
 
 		
-		print task.url
+		#print task.url
 		listCellTitles = grab.doc.select('//td[@class="base_one_title"]')
 		listCellContent = grab.doc.select('//td[@class="base_one_text"]')
 		for i in range(0, len(listCellTitles)):
-			print listCellTitles[i].text().encode('utf-8'), '|', listCellContent[i].text().encode('utf-8')
+			#print listCellTitles[i].text().encode('utf-8'), '|', listCellContent[i].text().encode('utf-8')
 			dCells[listCellTitles[i].text()] = listCellContent[i].text()
 
 		if u'Адрес:' in dCells:
 			sOutAddress = dCells[u'Адрес:'] + ';'
 			try:
-				sOutMetro = dCells[u'Адрес:'].split(', ')[4].replace(u'ближайшая станция метро ', '') + ';'
+				sOutMetro = dCells[u'Адрес:'].split(u'ближайшая станция метро ')[1].split(', ')[0] + ';'
 			except:
 				pass
-#		print sOutAddress.encode('utf-8')
-#		print sOutMetro.encode('utf-8')
+		#print sOutAddress.encode('utf-8')
+		#print sOutMetro.encode('utf-8')
 
 		if u'Этаж / этажность' in dCells:
 			sOutFloor = dCells[u'Этаж / этажность'] + ';'
-#		print sOutFloor.encode('utf-8')
+		#print sOutFloor.encode('utf-8')
 
 		if u'Продается' in dCells:
 			sOutRoomCount = dCells[u'Продается'].split(' ')[0] + ';'
-#		print sOutRoomCount.encode('utf-8')
+		#print sOutRoomCount.encode('utf-8')
 
 		if u'Площади(общая/жилая/кухня)' in dCells:
 			listSpace = dCells[u'Площади(общая/жилая/кухня)'].split(' / ')
 			sOutFloorSpace = listSpace[0] + ';'
 			sOutLivingSpace = listSpace[1] + ';'
 			sOutKitchenSpace = listSpace[2] + ';'
-#		print sOutFloorSpace.encode('utf-8')
-#		print sOutLivingSpace.encode('utf-8')
-#		print sOutKitchenSpace.encode('utf-8')
+		#print sOutFloorSpace.encode('utf-8')
+		#print sOutLivingSpace.encode('utf-8')
+		#print sOutKitchenSpace.encode('utf-8')
 
 		if u'Стоимость' in dCells:
 			sOutPrice = dCells[u'Стоимость'].split(u' руб.')[0] + ';'
-#		print sOutPrice.encode('utf-8')
+		#print sOutPrice.encode('utf-8')
 
 		if u'Дата обновления' in dCells:
 			sOutDate = dCells[u'Дата обновления'] + ';'
-#		print sOutDate.encode('utf-8')
+		#print sOutDate.encode('utf-8')
 
 		if u'Комментарии' in dCells:
 			sOutDescription = dCells[u'Комментарии'] + ';'
-#		print sOutDescription.encode('utf-8')
+		#print sOutDescription.encode('utf-8')
 
 		if u'Об объекте' in dCells:
 			sOutDescription = dCells[u'Об объекте'] + ' // ' + sOutDescription
-#		print sOutDescription.encode('utf-8')
+		#print sOutDescription.encode('utf-8')
 
 		if u'О рекламодателе' in dCells:
 			sOutAgency = dCells[u'О рекламодателе'] + ';'
-#		print sOutAgency.encode('utf-8')
+		#print sOutAgency.encode('utf-8')
 
 		if u'Телефоны' in dCells:
 			sOutPhone = dCells[u'Телефоны'] + ';'
-#		print sOutPhone.encode('utf-8')
+		#print sOutPhone.encode('utf-8')
 
-#
-#		#output object url to the collection
-#		if self.glb.getNew and CardType not in arExcludeCards:
-#			ul = task.url + "\n"
-#			if ul not in self.arObjCollection:
-#				self.objCollection.write(ul)
-#		
-#		#make an array from all table cells and then parse all elements
-#		if CardType not in arExcludeCards:
-#			self.arScreenShotQueue.append(task.url)
-#			for elem in grab.tree.xpath('//div[@id="ctl00_ContentPlaceHolder1_Div2"]//table//td'):
-#				if elem.text_content() <> '':
-#					cellContent = elem.text_content().strip(' \t\r\n')
-#					if cellContent <> u"Изображение объекта":
-#						tRow[tRowInd] = cellContent
-#						if tRowInd == 0:
-#							tRowInd = 1
-#						else:
-#							tRowInd = 0
-#							
-#							if tRow[0] == u'Тип операции':
-#								sOfferType = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Регион':
-#								sRegion = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] in [u'Муниципальное образование', u'Населённый пункт']:
-#								sTown = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Район':
-#								sDistrict = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Объект':
-#								sObjType = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] in [u'Площадь', u'площадь']:
-#								sArea = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Площадь участка, соток':
-#								sArea = tRow[1].encode('utf-8').replace(';',',') + ' сот;'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Цена':
-#								sPrice = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Тип цены':
-#								if tRow[1][0:3] == u'тыс':
-#									sPrice = str(float(sPrice[0:-1]) * 1000) + ';'
-#								
-#								tmpArray = tRow[1].split('/')
-#								if len(tmpArray) == 2:
-#									sArea = sArea[0:-1] + ' ' + tmpArray[1].encode('utf-8') + ';'
-#									sPricePerSqm = sPrice
-#									sPrice = ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Контактный телефон':
-#								sContactNumber = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Контактное лицо':
-#								sContactName = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Контактный E-Mail':
-#								sContactEmail = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Дата продления (создания)':
-#								sOfferDate = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] in (u'Улица н.п.', u'Улица'):
-#								sAddress = tRow[1].encode('utf-8').replace(';',',')
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Номер дома':
-#								sBldNumber = 'д.' + tRow[1].encode('utf-8').replace(';',',')
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Размещение':
-#								sBldType = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Этажность':
-#								sBldStoreys = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Этаж':
-#								sStorey = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Примерное назначение объекта':
-#								sFunction = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Удаленность от г. Перми':
-#								sRange = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Категория земель':
-#								sLandFunction = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							elif tRow[0] == u'Постройки на участке':
-#								sLandConstructions = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#-------------------------------------------------------------
-#							#							elif tRow[0] == u'':
-#							#								tmp = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#							#-------------------------------------------------------------
-#							#							elif tRow[0] == u'':
-#							#								tmp = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#							#-------------------------------------------------------------
-#							#							elif tRow[0] == u'':
-#							#								tmp = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#							#-------------------------------------------------------------
-#							#							elif tRow[0] == u'':
-#							#								tmp = tRow[1].encode('utf-8').replace(';',',') + ';'
-#							#							#-------------------------------------------------------------
-#							else:
-#								#all other values are appended to the separate string
-#								rawDescr += tRow[0].encode('utf-8').replace(',','|').replace(';','|') \
-#									+ ': ' \
-#									+ tRow[1].encode('utf-8').replace(',','.').replace(';','.').replace(':','') \
-#									+ ', '
-#			
-#			
-#			if CardType == u'Земельные':
-#				sObjType = 'Земля;'
-#			
+		sObjId += task.url.split('id=')[-1]
+
+		sOutputLine = sObjId + ';' + sOutType + \
+			sOutAddress + sOutMetro + \
+			sOutFloor + sOutRoomCount + sOutFloorSpace + sOutLivingSpace + sOutKitchenSpace + \
+			sOutRights + sOutPrice + \
+			sOutDate + sOutDescription + sOutAgency + sOutPhone + \
+			task.url + '\n'
+		
+		#print sOutputLine.encode('utf-8')
+		sOutputLine = sOutputLine.replace('&quot;','')
+		self.result_file.write(sOutputLine.encode('utf-8'))
+
 #			sObjId = task.url.split('=')[-1].strip(' ')
 #			sImgFolder = '/imgs/rezon_realty/' + sObjId + '/;'
 #			
