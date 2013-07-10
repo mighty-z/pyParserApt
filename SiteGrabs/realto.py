@@ -11,19 +11,17 @@ from time import localtime, strftime
 
 from grab import Grab
 from grab.spider import Spider, Task
-#from grab.selector import Selector
 
-#from Modules.webkit2png import LockNLoad
+from Modules.webkit2png import ShootOne
 
 class SitePars(Spider):
 	initial_urls = [
 					'http://www.realto.ru/base/flat_sale/'
 					,'http://www.realto.ru/base/new_build/'
 					]
+	
 	#this allows to pass variables into the class
 	glb = ''
-#	arScreenShotQueue = []
-#	dObjPhotoReference = {}
 	
 	#create output files
 	def prepare(self):
@@ -41,14 +39,14 @@ class SitePars(Spider):
 		if task.url.split('/')[4] == 'flat_sale':
 			iNavPagesCount = grab.doc.select('//a[@class="pages"]')[-2].number()
 			#print iNavPagesCount
-			for n in range(1, iNavPagesCount)[0:1]:############################################################################
+			for n in range(1, iNavPagesCount):
 				yield Task('NavPages', url = 'http://www.realto.ru/base/flat_sale/?SecLodg_step=%s' % n)
 		
 		if task.url.split('/')[4] == 'new_build':
 			urlLastNavPage = grab.doc.select('//div[@class="page_bar"]').select('.//a')[-1].attr('href')
 			iNavPagesCount = int(urlLastNavPage.split('=')[-1])
 			#print iNavPagesCount
-			for n in range(1, iNavPagesCount)[0:1]:############################################################################
+			for n in range(1, iNavPagesCount):
 				yield Task('NavPages', url = 'http://www.realto.ru/base/new_build/?page=%s' % n)
 
 	#get card pages // table view
@@ -138,7 +136,7 @@ class SitePars(Spider):
 			sOutPhone = dCells[u'Телефоны'] + ';'
 		#print sOutPhone.encode('utf-8')
 
-		sObjId += task.url.split('id=')[-1]
+		sObjId += task.url.split('id=')[-1].split('&SecLodg')[0]
 
 		sOutputLine = sObjId + ';' + sOutType + \
 			sOutAddress + sOutMetro + \
@@ -151,95 +149,20 @@ class SitePars(Spider):
 		sOutputLine = sOutputLine.replace('&quot;','')
 		self.result_file.write(sOutputLine.encode('utf-8'))
 
-#			sObjId = task.url.split('=')[-1].strip(' ')
-#			sImgFolder = '/imgs/rezon_realty/' + sObjId + '/;'
-#			
-#			OutputLine = task.url + ';' \
-#				+ sOfferType + sOfferDate \
-#				+ sObjType + sBldType \
-#				+ sRegion + sTown + sDistrict \
-#				+ sAddress + ' ' + sBldNumber + ';' \
-#				+ sDomain + sRange \
-#				+ sArea + sBldStoreys + sStorey \
-#				+ sPrice + sPricePerSqm \
-#				+ sFunction \
-#				+ sLandFunction + sLandConstructions \
-#				+ sContactNumber + sContactEmail + sContactName \
-#				+ sImgFolder + rawDescr
-#			
-#			OutputLine.replace('\n','') \
-#				.replace('\r','') \
-#				.replace('\t','') \
-#				.replace('\r\n','')
-#			
-#			OutputLine += '\n'
-#			self.result_file.write(OutputLine)
-#		
-#		
-#		#create task for saving images
-#		for urlPhoto in grab.tree.xpath('//div[@id="ctl00_ContentPlaceHolder1_Div2"]//table//td/img/@src'):
-#			urlPhoto = grab.make_url_absolute(urlPhoto)
-#			yield Task('SavePhoto', url = urlPhoto)
-#			refPhoto = urlPhoto.replace('/','_')
-#			self.dObjPhotoReference[refPhoto] = sObjId
-#	
-#	#save all photos of the object
-#	def task_SavePhoto(self,grab,task):
-#		
-#		refPhoto = task.url.replace('/','_')
-#		filename = '/' + task.url.split('/')[-1]
-#		sObjId = self.dObjPhotoReference[refPhoto]
-#		path = self.glb.envImgOutput + 'rezon_realty/' + sObjId + filename
-#		grab.response.save(path)
+		sImgFolder = self.glb.envImgOutput + '/realto/' + sObjId + '/'
 
-	
-	def shutdown(self):
-#		self.objCollection.close()
-#		
-#		#make screenshoots
-#		print '----------------------------'
-#		print 'Start making screanshoots '
-#		print ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())
-#		print '----------------------------'
-#		
-#		dir = 'rezon_realty/'
-#		
-#		ssBlock = []
-#		
-#		for url in self.arScreenShotQueue:
-#			ssBlock.append(url)
-#			if len(ssBlock) == 50:
-#				LockNLoad(ssBlock, self.glb.envDir, self.glb.envImgOutput + dir)
-#				ssBlock = []
-#		
-#		if len(ssBlock) <> 0:
-#			LockNLoad(ssBlock, self.glb.envDir, self.glb.envImgOutput + dir)
-#		
-#		
-#		
-#		print '----------------------------'
-#		print ' ... and now moving to object photo folders '
-#		print '----------------------------'
-#		
-#		files = os.listdir(self.glb.envImgOutput + dir)
-#		for file in files:
-#			if file.split('.')[-1] in ['png', 'jpg', 'jpeg', 'gif']:
-#				idObj = file.split('ItemID')[-1]
-#				idObj = idObj.split('-full')[0]
-#				source = self.glb.envImgOutput + dir + file
-#				destanation = self.glb.envImgOutput + dir + idObj + '/'
-#				
-#				if not os.path.isdir(destanation):
-#					os.mkdir(destanation)
-#				
-#				destanation += file
-#				shutil.move(source, destanation)
-		
-		print '----------------------------'
-		print 'Finished with realto.ru '
-		print ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())
-		print '----------------------------'
-		print '----------------------------'
+		#saving images
+		for urlPhoto in grab.doc.select('//td[@class="base_one_text"]//img'):
+			urlPhoto = grab.make_url_absolute(urlPhoto.attr('src'))
+			g = Grab()
+			g.go(urlPhoto)
+			g.response.save(sImgFolder + 'phone.gif')
+
+		if self.glb.usrFlag == 1:
+			ShootOne(task.url, self.glb.envDir, sImgFolder, 'screenshot')
+		elif self.glb.usrFlag == -1:
+			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + sImgFolder + 'screenshot' + '.png'
+				
 
 #=============================================
 def GoGrab(glb, threads = 1, debug = False, getNew = True):
@@ -253,4 +176,10 @@ def GoGrab(glb, threads = 1, debug = False, getNew = True):
 	bot = SitePars(thread_number = threads)
 	bot.glb = glb
 	bot.run()
+	
+	print '----------------------------'
+	print 'Finished with realto.ru '
+	print ' at ' + strftime("%Y-%m-%d %H:%M:%S", localtime())
+	print '----------------------------'
+	print '----------------------------'
 

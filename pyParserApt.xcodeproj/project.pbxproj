@@ -8,6 +8,7 @@
 
 /* Begin PBXFileReference section */
 		98372DF0178C790300E6CD62 /* macLauncher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = macLauncher.py; sourceTree = "<group>"; };
+		98372DF1178C816A00E6CD62 /* realty_dmir.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = realty_dmir.py; sourceTree = "<group>"; };
 		98EB315A1785B17600BB5606 /* sandbox.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = sandbox.py; sourceTree = "<group>"; };
 		98EB315B1785B17600BB5606 /* postparser.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = postparser.py; sourceTree = "<group>"; };
 		98EB315C1785B17600BB5606 /* webkit2png.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = webkit2png.py; sourceTree = "<group>"; };
@@ -46,6 +47,7 @@
 				98EB31611785B27200BB5606 /* __init__.py */,
 				98EB31621785E24900BB5606 /* cian.py */,
 				98EB31631785EA0400BB5606 /* realto.py */,
+				98372DF1178C816A00E6CD62 /* realty_dmir.py */,
 			);
 			path = SiteGrabs;
 			sourceTree = "<group>";

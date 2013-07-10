@@ -391,7 +391,7 @@ def ShootOne(
 			  , location
 			  , dir
 			  , filename = ''
-			  , width = 800.0
+			  , width = 600.0
 			  , height = 600.0
 			  , datestamp = False
 			  , noimages = False
@@ -400,15 +400,6 @@ def ShootOne(
 	noimagesStr = ''
 	if noimages:
 		noimagesStr = ' --noimages'
-	
-	print 'python ' \
-	+ location \
-	+ '/Modules/webkit2png.py -F' \
-	+ ' -W ' + str(width) \
-	+ ' -H ' + str(height) \
-	+ ' --dir ' + dir \
-	+ noimagesStr \
-	+ ' ' + url
 
 	if len(filename)!=0:
 		filename = ' --filename ' + filename
