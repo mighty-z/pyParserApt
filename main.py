@@ -12,7 +12,7 @@ from time import localtime, strftime
 #from multiprocessing import Process
 #from grab.spider import Spider, Task
 
-
+#do we really ned this HERE?
 try: 
 	from Modules.webkit2png import LockNLoad
 except:
@@ -72,7 +72,7 @@ glb = DetEnv()
 # add site parsers here
 # siteName.GoGrab(glb, [iNumberOfThreads], [bDebug], [bGetNew])
 #cian.GoGrab(glb, 6, True)
-realto.GoGrab(glb, 1, True)
+realto.GoGrab(glb, 6, True)
 
 #post_parser(
 #			glb
