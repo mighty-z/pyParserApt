@@ -385,6 +385,34 @@ def LockNLoad(
 			  + noimagesStr \
 			  + ' ' + urlsStr
 			  )
+
+def ShootOne(
+			  url
+			  , location
+			  , dir
+			  , filename = ''
+			  , width = 800.0
+			  , height = 600.0
+			  , datestamp = False
+			  , delay = 0.0
+			  , noimages = False
+			  ):
 	
+	noimagesStr = ''
+	if noimages:
+		noimagesStr = ' --noimages'
+	
+	os.system(
+			  'python ' \
+			  + location \
+			  + '/Modules/webkit2png.py -F' \
+			  + ' -W ' + str(width) \
+			  + ' -H ' + str(height) \
+			  + ' --delay ' + str(delay) \
+			  + ' --dir ' + dir \
+			  + noimagesStr \
+			  + ' ' + url
+			  )
+
 
 if __name__ == '__main__' : main()
