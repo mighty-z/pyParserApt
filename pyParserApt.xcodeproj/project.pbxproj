@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXFileReference section */
+		98372DF0178C790300E6CD62 /* macLauncher.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = macLauncher.py; sourceTree = "<group>"; };
+		98372DF1178C816A00E6CD62 /* realty_dmir.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = realty_dmir.py; sourceTree = "<group>"; };
 		98EB315A1785B17600BB5606 /* sandbox.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = sandbox.py; sourceTree = "<group>"; };
 		98EB315B1785B17600BB5606 /* postparser.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = postparser.py; sourceTree = "<group>"; };
 		98EB315C1785B17600BB5606 /* webkit2png.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = webkit2png.py; sourceTree = "<group>"; };
@@ -14,6 +16,7 @@
 		98EB31601785B21D00BB5606 /* main.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = main.py; sourceTree = "<group>"; };
 		98EB31611785B27200BB5606 /* __init__.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = __init__.py; sourceTree = "<group>"; };
 		98EB31621785E24900BB5606 /* cian.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = cian.py; sourceTree = "<group>"; };
+		98EB31631785EA0400BB5606 /* realto.py */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.script.python; path = realto.py; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXGroup section */
@@ -21,6 +24,7 @@
 			isa = PBXGroup;
 			children = (
 				98EB31601785B21D00BB5606 /* main.py */,
+				98372DF0178C790300E6CD62 /* macLauncher.py */,
 				98EB315E1785B18800BB5606 /* SiteGrabs */,
 				98EB31551785B06E00BB5606 /* Modules */,
 			);
@@ -29,22 +33,24 @@
 		98EB31551785B06E00BB5606 /* Modules */ = {
 			isa = PBXGroup;
 			children = (
-				98EB315A1785B17600BB5606 /* sandbox.py */,
-				98EB315B1785B17600BB5606 /* postparser.py */,
-				98EB315C1785B17600BB5606 /* webkit2png.py */,
 				98EB315D1785B17600BB5606 /* __init__.py */,
+				98EB315B1785B17600BB5606 /* postparser.py */,
+				98EB315A1785B17600BB5606 /* sandbox.py */,
+				98EB315C1785B17600BB5606 /* webkit2png.py */,
 			);
 			path = Modules;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
 		};
 		98EB315E1785B18800BB5606 /* SiteGrabs */ = {
 			isa = PBXGroup;
 			children = (
-				98EB31621785E24900BB5606 /* cian.py */,
 				98EB31611785B27200BB5606 /* __init__.py */,
+				98EB31621785E24900BB5606 /* cian.py */,
+				98EB31631785EA0400BB5606 /* realto.py */,
+				98372DF1178C816A00E6CD62 /* realty_dmir.py */,
 			);
 			path = SiteGrabs;
-			sourceTree = SOURCE_ROOT;
+			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
 
@@ -55,7 +61,8 @@
 			buildConfigurationList = 98EB31521785AFD500BB5606 /* Build configuration list for PBXLegacyTarget "pyParserApt" */;
 			buildPhases = (
 			);
-			buildToolPath = /Library/Frameworks/Python.framework/Versions/2.7/bin/python;
+			buildToolPath = /Library/Frameworks/Python.framework/Versions/2.7/bin/python2.7;
+			buildWorkingDirectory = "";
 			dependencies = (
 			);
 			name = pyParserApt;
@@ -148,6 +155,7 @@
 		98EB31531785AFD500BB5606 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				DEBUGGING_SYMBOLS = YES;
 				GCC_GENERATE_DEBUGGING_SYMBOLS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
@@ -160,6 +168,7 @@
 		98EB31541785AFD500BB5606 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
 				OTHER_CFLAGS = "";
 				OTHER_LDFLAGS = "";
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -185,6 +194,7 @@
 				98EB31541785AFD500BB5606 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
