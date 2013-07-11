@@ -15,11 +15,11 @@ from time import localtime, strftime
 #do we really ned this HERE?
 try: 
 	from Modules.webkit2png import LockNLoad
+	from Modules.postparser import post_parser, sort_screenshots
 except:
-	pass
+	print "Fuck up"
 
 from SiteGrabs import *
-from Modules.postparser import post_parser, sort_screenshots
 
 
 
