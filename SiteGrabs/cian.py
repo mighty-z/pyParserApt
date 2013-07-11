@@ -13,11 +13,13 @@ from time import localtime, strftime
 from grab.spider import Spider, Task
 
 imgDict, typeDict, roomsDict = {}, {}, {}
+sitePath = 'cian/'
 
 class SitePars(Spider):
 	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room0=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=1']
 
 	def prepare(self):
+		os.mkdir(self.glb.envOutput + sitePath)
 		self.result_file = open(self.glb.envOutput + 'cian.txt', 'w')
 		self.result_file.write('ID объекта;Тип недвижимости;Адрес;Станция метро;Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;\
 	Площадь кухни;Вид передаваемого права;Цена продажи;Дата предложения;Описание;Агентство;Телефон;Ссылка\n')
@@ -142,18 +144,18 @@ class SitePars(Spider):
 		self.result_file.write(stringO + "\n")
 
 		#меняем каталог для работы с фс
-		os.chdir(self.glb.envOutput)
+		os.chdir(self.glb.envOutput + sitePath)
 		os.mkdir(objID)
 		# save an url screenshot
 		##scrFolder = self.glb.envOutput + 'screenshots/'
 		
-		scrFolder = self.glb.envOutput + objID
+		scrFolder = self.glb.envOutput + sitePath + objID
 
 		if self.glb.usrFlag == 1:
 			# write here your command! change sript_name to your
 			currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
 		elif self.glb.usrFlag == -1:
-			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + '/' + objID + '.png'
+			currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -f jpg -o ' + scrFolder + '/' + objID + '.jpg'
 			#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 		
 		os.system(currCmd)
@@ -167,7 +169,7 @@ class SitePars(Spider):
 	def task_imageSave(self, grab, task):
 		global imgDict
 		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
-		path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
+		path = self.glb.envOutput + sitePath + imgDict[task.url] + '/%s.jpg' % imgRes
 		grab.response.save(path)
 
 def GoGrab(glb, threads = 1, debug = False, getNew = True):

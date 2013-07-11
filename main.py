@@ -53,6 +53,7 @@ def DetEnv(fTest = True):
 	elif curr_uname == 'bt':
 		glb.usrFlag = -1
 		glb.envDir = '/root/pyParserAptGit/'
+		#glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
 		glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
 		glb.envImgOutput = '/root/Desktop/pyParser/pyOutput/imgs/'
 	

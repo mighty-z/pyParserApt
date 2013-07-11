@@ -13,11 +13,13 @@ from time import localtime, strftime
 from grab.spider import Spider, Task
 
 imgDict = {}
+sitePath = 'realty_dmir/'
 
 class SitePars(Spider):
 	initial_urls = ['http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=1']
 
 	def prepare(self):
+		os.mkdir(self.glb.envOutput + sitePath)
 		self.result_file = open(self.glb.envOutput + 'realty.dmir.txt', 'w')
 		self.result_file.write('ID объекта;Тип недвижимости;Адрес;Станция метро;Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;\
 	Площадь кухни;Вид передаваемого права;Цена продажи;Дата предложения;Описание;Агентство;Телефон;Ссылка\n')
@@ -26,7 +28,7 @@ class SitePars(Spider):
 	def task_initial(self, grab, task):
 		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
 		num_of_pages = 1
-		for n in range(1, num_of_pages + 3):
+		for n in range(1, num_of_pages + 8):
 			yield Task('nav', url = 'http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
@@ -147,12 +149,12 @@ class SitePars(Spider):
 
 		if cleanFlag==False:
 			#меняем каталог для работы с фс
-			os.chdir(self.glb.envOutput)
+			os.chdir(self.glb.envOutput + sitePath)
 			os.mkdir(objID)
 			# save an url screenshot
 			##scrFolder = self.glb.envOutput + 'screenshots/'
 			
-			scrFolder = self.glb.envOutput + objID
+			scrFolder = self.glb.envOutput + sitePath + objID
 
 			if self.glb.usrFlag == 1:
 				# write here your command! change sript_name to your
@@ -173,7 +175,7 @@ class SitePars(Spider):
 	def task_imageSave(self, grab, task):
 		global imgDict
 		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
-		path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
+		path = self.glb.envOutput + sitePath + imgDict[task.url] + '/%s.jpg' % imgRes
 		grab.response.save(path)
 
 def GoGrab(glb, threads = 1, debug = False, getNew = True):
