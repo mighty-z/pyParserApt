@@ -15,11 +15,11 @@ from time import localtime, strftime
 #do we really ned this HERE?
 try: 
 	from Modules.webkit2png import LockNLoad
+	from Modules.postparser import post_parser, sort_screenshots
 except:
-	pass
+	print "Fuck up"
 
 from SiteGrabs import *
-from Modules.postparser import post_parser, sort_screenshots
 
 
 
@@ -53,6 +53,7 @@ def DetEnv(fTest = True):
 	elif curr_uname == 'bt':
 		glb.usrFlag = -1
 		glb.envDir = '/root/pyParserAptGit/'
+		#glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
 		glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
 		glb.envImgOutput = '/root/Desktop/pyParser/pyOutput/imgs/'
 	
@@ -71,8 +72,11 @@ glb = DetEnv()
 
 # add site parsers here
 # siteName.GoGrab(glb, [iNumberOfThreads], [bDebug], [bGetNew])
+
 #cian.GoGrab(glb, 6, True)
-realto.GoGrab(glb, 6, True)
+realty_dmir.GoGrab(glb, 6, False)
+#cian.GoGrab(glb, 6, True)
+#realto.GoGrab(glb, 6, True)
 
 #post_parser(
 #			glb

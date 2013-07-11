@@ -13,21 +13,24 @@ from time import localtime, strftime
 from grab.spider import Spider, Task
 
 imgDict = {}
+sitePath = 'realty_dmir/'
 
 class SitePars(Spider):
 	initial_urls = ['http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=1']
 
 	def prepare(self):
+		os.mkdir(self.glb.envOutput + sitePath)
 		self.result_file = open(self.glb.envOutput + 'realty.dmir.txt', 'w')
 		self.result_file.write('ID объекта;Тип недвижимости;Адрес;Станция метро;Этаж/Этажность;Количество комнат;Площадь общая;Площадь жилая;\
 	Площадь кухни;Вид передаваемого права;Цена продажи;Дата предложения;Описание;Агентство;Телефон;Ссылка\n')
 
 	#определяем номер последней страницы навигации. НАДО АВТОМАТИЗИРОВАТЬ
 	def task_initial(self, grab, task):
-		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
-		num_of_pages = 1
-		for n in range(1, num_of_pages + 1):
-			yield Task('nav', url = 'http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=%s' % n)
+		#база меняется через каждые 5 минут. Доступно всего 9 страниц. Делаем повторы перебора
+		for i in range(1,42):
+			num_of_pages = 1
+			for n in range(1, num_of_pages + 8):
+				yield Task('nav', url = 'http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
 	def task_nav(self, grab, task):
@@ -74,7 +77,7 @@ class SitePars(Spider):
 			if len(temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')) > 1:
 				rSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[0] + ';'
 				rLiveSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[1] + ';'
-				#rDinnerSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[2] + ';'
+				rDinnerSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[2] + ';'
 			else:
 				rSquare = temp.text_content().encode('utf-8') + ';'
 
@@ -140,32 +143,35 @@ class SitePars(Spider):
 			+ rRoomCount + rSquare + rLiveSquare + rDinnerSquare \
 			+ rRights + rCost + rDate + rDescr + rAgency + rPhone + task.url + ';'
 
+		#меняем каталог для работы с фс
+		os.chdir(self.glb.envOutput + sitePath)
+		try:
+			os.mkdir(objID)
+		except:
+			cleanFlag = True
+
 		#пишем в файл
 		if cleanFlag==False:
 			stringO = stringO.strip('\r\n\t').replace('\r\n', ' ')
 			self.result_file.write(stringO + "\n")
-
-		if cleanFlag==False:
-			#меняем каталог для работы с фс
-			os.chdir(self.glb.envOutput)
-			os.mkdir(objID)
+			
 			# save an url screenshot
 			##scrFolder = self.glb.envOutput + 'screenshots/'
 			
-			scrFolder = self.glb.envOutput + objID
+			scrFolder = self.glb.envOutput + sitePath + objID
 
 			if self.glb.usrFlag == 1:
 				# write here your command! change sript_name to your
 				currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
 			elif self.glb.usrFlag == -1:
-				currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + '/' + objID + '.png'
+				currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -f jpg -g 1000 1700 -o ' + scrFolder + '/' + objID + '.jpg'
 				#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 			
 			os.system(currCmd)
 
 			# saving all images. PLEASE, CREATE imgs folder in pyOutput 
 			for nxtElem in grab.tree.xpath('//img[@alt=""]/@src'):
-				if str(grab.make_url_absolute(nxtElem)).encode('utf-8').split('/')[2] == 'realty.dmir.ru':
+				if str(grab.make_url_absolute(nxtElem)).encode('utf-8').split('/')[2] == 'images.dmir.ru':
 					imgDict[grab.make_url_absolute(nxtElem)]=objID
 					yield Task('imageSave', url=grab.make_url_absolute(nxtElem))
 
@@ -173,7 +179,7 @@ class SitePars(Spider):
 	def task_imageSave(self, grab, task):
 		global imgDict
 		imgRes = imgDict[task.url] + '_' + str(random.randint(1,99))
-		path = self.glb.envOutput + imgDict[task.url] + '/%s.jpg' % imgRes
+		path = self.glb.envOutput + sitePath + imgDict[task.url] + '/%s.jpg' % imgRes
 		grab.response.save(path)
 
 def GoGrab(glb, threads = 1, debug = False, getNew = True):
