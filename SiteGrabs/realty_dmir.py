@@ -26,10 +26,11 @@ class SitePars(Spider):
 
 	#определяем номер последней страницы навигации. НАДО АВТОМАТИЗИРОВАТЬ
 	def task_initial(self, grab, task):
-		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
-		num_of_pages = 1
-		for n in range(1, num_of_pages + 8):
-			yield Task('nav', url = 'http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=%s' % n)
+		#база меняется через каждые 5 минут. Доступно всего 9 страниц. Делаем повторы перебора
+		for i in range(1,42):
+			num_of_pages = 1
+			for n in range(1, num_of_pages + 8):
+				yield Task('nav', url = 'http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
 	def task_nav(self, grab, task):
@@ -142,15 +143,18 @@ class SitePars(Spider):
 			+ rRoomCount + rSquare + rLiveSquare + rDinnerSquare \
 			+ rRights + rCost + rDate + rDescr + rAgency + rPhone + task.url + ';'
 
+		#меняем каталог для работы с фс
+		os.chdir(self.glb.envOutput + sitePath)
+		try:
+			os.mkdir(objID)
+		except:
+			cleanFlag = True
+
 		#пишем в файл
 		if cleanFlag==False:
 			stringO = stringO.strip('\r\n\t').replace('\r\n', ' ')
 			self.result_file.write(stringO + "\n")
-
-		if cleanFlag==False:
-			#меняем каталог для работы с фс
-			os.chdir(self.glb.envOutput + sitePath)
-			os.mkdir(objID)
+			
 			# save an url screenshot
 			##scrFolder = self.glb.envOutput + 'screenshots/'
 			
