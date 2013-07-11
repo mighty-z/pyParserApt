@@ -26,7 +26,7 @@ class SitePars(Spider):
 	def task_initial(self, grab, task):
 		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
 		num_of_pages = 1
-		for n in range(1, num_of_pages + 1):
+		for n in range(1, num_of_pages + 3):
 			yield Task('nav', url = 'http://realty.dmir.ru/msk/sale-tbl/prodazha-kvartir-v-moskve/?csort=best&page=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
@@ -74,7 +74,7 @@ class SitePars(Spider):
 			if len(temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')) > 1:
 				rSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[0] + ';'
 				rLiveSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[1] + ';'
-				#rDinnerSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[2] + ';'
+				rDinnerSquare = temp.text_content().encode('utf-8').replace(' ', '').replace('\r\n', '').split('/')[2] + ';'
 			else:
 				rSquare = temp.text_content().encode('utf-8') + ';'
 
@@ -158,14 +158,14 @@ class SitePars(Spider):
 				# write here your command! change sript_name to your
 				currCmd = self.glb.envDir + 'script_name' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('/')[-2] + '.png'
 			elif self.glb.usrFlag == -1:
-				currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -o ' + scrFolder + '/' + objID + '.png'
+				currCmd = 'python ' + '/root/Desktop/pyParser/webkit2png' + ' ' + task.url + ' -f jpg -g 1000 1700 -o ' + scrFolder + '/' + objID + '.jpg'
 				#currCmd = 'python ' + self.glb.envDir + 'Modules/webkit2png_lin.py' + ' ' + task.url + ' -o ' + scrFolder + task.url.split('=')[1] + '.png'
 			
 			os.system(currCmd)
 
 			# saving all images. PLEASE, CREATE imgs folder in pyOutput 
 			for nxtElem in grab.tree.xpath('//img[@alt=""]/@src'):
-				if str(grab.make_url_absolute(nxtElem)).encode('utf-8').split('/')[2] == 'realty.dmir.ru':
+				if str(grab.make_url_absolute(nxtElem)).encode('utf-8').split('/')[2] == 'images.dmir.ru':
 					imgDict[grab.make_url_absolute(nxtElem)]=objID
 					yield Task('imageSave', url=grab.make_url_absolute(nxtElem))
 

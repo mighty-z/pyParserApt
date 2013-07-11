@@ -71,7 +71,9 @@ glb = DetEnv()
 
 # add site parsers here
 # siteName.GoGrab(glb, [iNumberOfThreads], [bDebug], [bGetNew])
-cian.GoGrab(glb, 6, True)
+
+#cian.GoGrab(glb, 6, True)
+realty_dmir.GoGrab(glb, 6, False)
 
 #post_parser(
 #			glb

@@ -15,7 +15,7 @@ from grab.spider import Spider, Task
 imgDict, typeDict, roomsDict = {}, {}, {}
 
 class SitePars(Spider):
-	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=1']
+	initial_urls = ['http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room0=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=1']
 
 	def prepare(self):
 		self.result_file = open(self.glb.envOutput + 'cian.txt', 'w')
@@ -27,7 +27,7 @@ class SitePars(Spider):
 		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
 		num_of_pages = 2
 		for n in range(1, num_of_pages + 37):
-			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=%s' % n)
+			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room0=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
 	def task_nav(self, grab, task):
@@ -75,7 +75,10 @@ class SitePars(Spider):
 		rRoomCount = roomsDict[objID]
 
 		#тип недвижимости
-		rType = 'Квартира;'
+		if rRoomCount == 'комната;':
+			rType = 'Комната;'
+		else:
+			rType = 'Квартира;'
 
 		#адрес
 		for elem in grab.xpath_list('//h1[@class="object_descr_addr"]'):
