@@ -54,7 +54,7 @@ def DetEnv(fTest = True):
 		glb.usrFlag = -1
 		glb.envDir = '/root/pyParserAptGit/'
 		#glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
-		glb.envOutput = '/root/Desktop/pyParser/pyOutput/'
+		glb.envOutput = '/media/FAT32-1TB/pyOutput/'
 		glb.envImgOutput = '/root/Desktop/pyParser/pyOutput/imgs/'
 	
 	return glb
@@ -73,7 +73,7 @@ glb = DetEnv()
 # add site parsers here
 # siteName.GoGrab(glb, [iNumberOfThreads], [bDebug], [bGetNew])
 
-#cian.GoGrab(glb, 6, True)
+cian.GoGrab(glb, 6, False)
 realty_dmir.GoGrab(glb, 6, False)
 #cian.GoGrab(glb, 6, True)
 #realto.GoGrab(glb, 6, True)
