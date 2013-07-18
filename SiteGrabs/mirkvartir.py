@@ -34,8 +34,9 @@ class SitePars(Spider):
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
 	def task_nav(self, grab, task):
-		for elem in grab.tree.xpath('//a[@class="m cmpz-list-item"]/@href'):
-			yield Task('mirkvartir', url=grab.make_url_absolute(elem))
+		for elem in grab.doc.select('//div[@class="list_item"]'):
+			tmp = elem.select('.//a[@class="m cmpz-list-item"]').attr('href')
+			yield Task('mirkvartir', url=grab.make_url_absolute(tmp))
 
 	def task_mirkvartir(self, grab, task):
 		
@@ -58,29 +59,29 @@ class SitePars(Spider):
 		rRights = 'Вторичка;'
 
 		#стоимость
-		temp = grab.xpath('//p[@class="price"]')
-		rCost = str(re.sub(nonNum, '', temp.text_content().encode('utf-8'))) + ';'
+		temp = grab.doc.select('//p[@class="price"]')
+		rCost = str(re.sub(nonNum, '', temp.text().encode('utf-8'))) + ';'
 
 		#адрес
-		temp = grab.xpath('//div[@class="twocolshead"]//h2[@class="s2"]')
-		rAddress = str(temp.text_content().encode('utf-8').split('Москва')[1]) + ';'
+		temp = grab.doc.select('//div[@class="twocolshead"]//h2[@class="s2"]')
+		rAddress = str(temp.text().encode('utf-8').split('Москва')[1]) + ';'
 
 		#телефон + имя контакта
-		temp = grab.xpath('//div[@class="name_block_rb name_block_rb-fix"]')
-		rPhone = str(temp.text_content().encode('utf-8').split('Телефон: ')[1]) + ';'
-		rAgency = str(temp.text_content().encode('utf-8').split('Телефон: ')[0]) + ';'
+		temp = grab.doc.select('//div[@class="name_block_rb name_block_rb-fix"]')
+		rPhone = str(temp.text().encode('utf-8').split('Телефон: ')[1]) + ';'
+		rAgency = str(temp.text().encode('utf-8').split('Телефон: ')[0]) + ';'
 
 		#общее описание
-		temp = grab.xpath('//p[@class="estate-description"]')
-		rDescr = temp.text_content().encode('utf-8').replace('"', '').replace('\r\n', '').replace('\t', '').replace('\n', '').replace('\r', '').replace(';', '|').strip() + ';'
+		temp = grab.doc.select('//p[@class="estate-description"]')
+		rDescr = temp.text().encode('utf-8').replace('"', '').replace('\r\n', '').replace('\t', '').replace('\n', '').replace('\r', '').replace(';', '|').strip() + ';'
 
 		#метро
-		temp = grab.xpath('//dl[@class="info-item"]')
-		rMetro = str(temp.text_content().encode('utf-8').replace('\t', '').replace('\r\n', '').split('Метро')[1].split('Ближайшее метро')[0]) + ';'
+		temp = grab.doc.select('//dl[@class="info-item"]')
+		rMetro = str(temp.text().encode('utf-8').replace('\t', '').replace('\r\n', '').split('Метро')[1].split('Ближайшее метро')[0]) + ';'
 
 		#блок с описание (этажность, площадь, количество комнат)
-		temp = grab.xpath('//div[@class="objparams estate-info-container"]')
-		listDescr = temp.text_content().encode('utf-8').replace('\t', '').strip().split('\r\n')
+		temp = grab.doc.select('//div[@class="objparams estate-info-container"]')
+		listDescr = temp.text().encode('utf-8').replace('\t', '').strip().split('\r\n')
 		for count in range(len(listDescr)):
 			if listDescr[count].strip() == 'Этаж / этажность':
 				rFloor = listDescr[count + 1].replace(' ', '') + ';'
@@ -92,8 +93,8 @@ class SitePars(Spider):
 				rRoomCount = listDescr[count + 1].replace(' ', '') + ';'
 
 		#дата обновления
-		temp = grab.xpath('//td[@class="tc-content"]')
-		rDate = temp.text_content().encode('utf-8').strip() + ';'
+		temp = grab.doc.select('//td[@class="tc-content"]')
+		rDate = temp.text().encode('utf-8').strip() + ';'
 
 		#составляем строку для заливки 
 		stringO = objID + ';' + rType + rAddress + rMetro + rFloor \
