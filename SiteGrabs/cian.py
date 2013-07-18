@@ -28,7 +28,7 @@ class SitePars(Spider):
 	def task_initial(self, grab, task):
 		#num_of_pages = int(grab.xpath_number(u'//a[@title="Перейти на последнюю страницу"]'))
 		num_of_pages = 2
-		for n in range(1, num_of_pages + 37):
+		for n in range(1, num_of_pages + 2816):
 			yield Task('nav', url = 'http://www.cian.ru/cat.php?deal_type=2&obl_id=1&city[0]=1&room0=1&room1=1&room2=1&room3=1&room4=1&room5=1&room6=1&room7=1&p=%s' % n)
 
 	#перебираем навигационные страницы и ищем ссылки на карточки
